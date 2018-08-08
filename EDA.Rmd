@@ -1,0 +1,750 @@
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+
+setwd("C:/Users/Public/Documents/Downloads")
+
+redwine <- read.csv('wineQualityReds.csv')
+
+```
+
+#Red Wine Quality Exploration
+
+The guiding question throughout this analysis is to find: 
+Which chemical properties influence the quality of red wine?
+
+##Univariate Plots Section
+
+First we want to familiarize ourselves with our dataset.
+
+Our dataset has 1599 observations and 12 variables. Throughout this analysis we will conduct univariate, bivariate and multivariate analysis.
+
+##Description of the variables
+
+1 - fixed acidity (tartaric acid - g / dm^3)
+2 - volatile acidity (acetic acid - g / dm^3)
+3 - citric acid (g / dm^3)
+4 - residual sugar (g / dm^3)
+5 - chlorides (sodium chloride - g / dm^3)
+6 - free sulfur dioxide (mg / dm^3)
+7 - total sulfur dioxide (mg / dm^3)
+8 - density (g / cm^3)
+9 - pH (unitless)
+10 - sulphates (potassium sulphate - g / dm3)
+11 - alcohol (% by volume)
+12 - quality (score between 0 and 10)
+
+```{r echo=FALSE, Univariate_Plots}
+
+str(redwine)
+summary(redwine)
+
+```
+
+We will start looking at the histograms of the variables. Note that the first variable "X" is just counting the number of observations. 
+Hence, we do not need a plot for that.
+We want to see the distributions of the variables and whether there are 
+outliers.
+
+```{r echo=FALSE, Load_the_Data1}
+
+library(ggplot2)
+library(dplyr)
+library(knitr)
+library(gridExtra)
+
+#With this function we will plot the histograms and boxplots of our variables.
+
+create_hist <- function(variable, binwidth){
+return(ggplot(aes_string(x = variable), data = redwine)+
+   geom_histogram(binwidth = binwidth))
+
+}
+
+make_boxplot <- function(variable){
+  return(ggplot(aes_string(x = 1, y = variable), data = redwine)+
+           geom_jitter(alpha = 0.1)+
+           geom_boxplot(alpha = 0.2, color = 'red'))
+}
+
+grid.arrange(create_hist('fixed.acidity', 0.3),
+             make_boxplot('fixed.acidity'), ncol = 2)
+
+```
+
+The variable 'fixed acidity' has a slighty right-skewed distribution, with a median value of 7.9 and a mean value of 8.32. 
+The red points in our boxplot show the presence of outliers.
+Indeed, the data indicates that the maximum value of this variable is 15.9.
+The 1st quartile is at 7.1, while the 3rd quartile is at 9.2.
+
+```{r echo=FALSE, Load_the_Data2}
+
+grid.arrange(create_hist('volatile.acidity', 0.03),
+             make_boxplot('volatile.acidity'), ncol = 2)
+
+```
+
+The variable 'volatile acidity' also has a slightly right-skewed distribution,
+with a median value of 0.52 and a mean value of 0.53.
+The 1st quartile is 0.39 and the 3rd quartile is 0.64.
+The red points on the right graph show the presence of outliers.
+The maximum value is 1.58, which is around 3 times more than the mean.
+
+```{r echo=FALSE, Load_the_Data3}
+
+grid.arrange(create_hist('citric.acid', 0.01),
+             make_boxplot('citric.acid'), ncol = 2)
+
+```
+
+Notice that the highest frequency of the citric acid value is 0.
+The distribution is right-skewed with a median value of 0.26 and 
+a mean of 0.27. There is just one outlier: the citric acid value of 1.
+The 1st quartile is 0.09, while the 3rd quartile is 0.42.
+
+```{r echo=FALSE, Load_the_Data4}
+
+grid.arrange(create_hist('residual.sugar', 0.3),
+             make_boxplot('residual.sugar'), ncol = 2)
+
+```
+
+Looking at the plots for the variable 'residual sugar', we can see a 
+right-skewed distribution, which is confirmed by the presence of very many
+outliers in our boxplot. 
+The values range from 0.9 to 15.5, with a mean of 2.54 and a median of 2.2.
+The 1st quartile is 1.9 and the 3rd quartile is 2.6.
+
+```{r echo=FALSE, Load_the_Data5}
+
+grid.arrange(create_hist('chlorides', 0.01),
+             make_boxplot('chlorides'), ncol = 2)
+
+```
+
+The distribution of the variable 'chlorides' is very similar to the 
+distribution of 'residual sugar'. It is also heavily right-skewed, with a lot
+of outliers. The median value is 0.079 and the mean is 0.087.
+The 1st quartile is 0.07 and the 3rd quartile is 0.09.
+
+```{r echo=FALSE, Load_the_Data6}
+
+grid.arrange(create_hist('free.sulfur.dioxide', 0.8),
+             make_boxplot('free.sulfur.dioxide'), ncol = 2)
+
+```
+
+'Free sulfur dioxide' has a right-skewed distribution. The red points in the
+boxplot indicate that there are outliers. 
+The values range from 1 to 72, with a median of 14 and a mean of 15.87.
+The 1st quartile is 7, while the 3rd quartile is 21.
+
+```{r echo=FALSE, Load_the_Data7}
+
+grid.arrange(create_hist('total.sulfur.dioxide', 0.8),
+             make_boxplot('total.sulfur.dioxide'), ncol = 2)
+
+```
+
+The distribution of the variable 'total sulfur dioxide' is skewed to the right.
+The boxplot indicates the presence of outliers, with a median value of 38.
+The values range from 6 to 289, with a mean of 46.5.
+The 1st quartile is 22 and the 3rd quartile is 62.
+
+```{r echo=FALSE, Load_the_Data8}
+
+grid.arrange(create_hist('density', 0.001),
+             make_boxplot('density'), ncol = 2)
+
+```
+
+We can notice that the distribution of the variable 'density' is normal.
+Indeed the medain and the mean are close to each other. Namely they are
+0.9968 and 0.9967 respectively.
+The redpoints in the boxplot indicate the presence of outliers 
+above and below the median. 
+The 1st quartile and 3rd quartile are pretty close to each other as well, 
+with values of 0.9956 and 0.9978, respectively.
+
+```{r echo=FALSE, Load_the_Data9}
+
+grid.arrange(create_hist('pH', 0.1),
+             make_boxplot('pH'), ncol = 2)
+
+```
+
+'pH' is also a normally distributed variable with a median and mean equal 
+to 3.31. There are a few outliers above and below the median, as shown in
+the boxplot on the right.
+The 1st and 3rd quartile are also close to each other, with values of 
+3.21 and 3.4, respectively.
+
+```{r echo=FALSE, Load_the_Data10}
+
+grid.arrange(create_hist('sulphates', 0.1),
+             make_boxplot('sulphates'), ncol = 2)
+
+```
+
+'Sulphates' has a distribution skewed to the right, with many outliers.
+The values range from 0.33 to 2.0.
+The median value is 0.62 and the mean is 0.66.
+The 1st quartile is 0.55 and the 3rd quartile is 0.73.
+
+```{r echo=FALSE, Load_the_Data11}
+
+grid.arrange(create_hist('alcohol', 0.1),
+             make_boxplot('alcohol'), ncol = 2)
+
+```
+
+The variable 'alcohol' has a right-skewed distribution with very few
+outliers. The maximum value of 14.9 is an example of such an outlier.
+The median value is 10.2 and the mean is 10.4.
+The 1st quartile is 9.5 and the 3rd quartile is 11.1.
+
+The variables 'density' and 'pH' have normal distributions.
+The variables 'fixed acidity', 'volatile acidity', 'citric acid', 'residual sugar', 'chlorides', 'free sulfur dioxide', 'total sulfur dioxide', 'sulphates' and 'alcohol' have right-skewed distributions. We will apply
+log10 transformations to these variables to normalize their distributions.
+
+```{r echo=FALSE, Load_the_Data12}
+
+ggplot(aes_string(x = 'quality'), data = redwine)+
+  geom_bar(stat = 'count')
+  
+
+```
+
+The variable 'quality' is a categorical variable, with the most frequent values
+of '5' and '6'.
+We will now apply log10 transformations to the right-skewed distributions
+of our variables.
+Notice that the distributions of these variables become indeed more normal.
+
+```{r echo=FALSE, Load_the_Data13}
+
+#With this function we will apply the log10 transformations to our variables of interest.
+
+create_logplot <- function(variable, binwidth, a, b, c){
+return(ggplot(aes_string(x = variable), data = redwine)+
+   geom_histogram(binwidth = binwidth)+
+     scale_x_continuous(trans = "log10",
+                        breaks = c(a, b, c)))
+}
+
+grid.arrange(create_hist('residual.sugar', 0.1), 
+             create_logplot('residual.sugar', 0.05, 1, 3, 5), 
+             ncol = 1)
+
+```
+
+```{r echo=FALSE, Load_the_Data14}
+grid.arrange(create_hist('fixed.acidity', 0.3), 
+             create_logplot('fixed.acidity', 0.03, 5, 7, 10), 
+             ncol = 1)
+
+```
+
+```{r echo=FALSE, Load_the_Data15}
+grid.arrange(create_hist('volatile.acidity', 0.01),
+             create_logplot('volatile.acidity', 0.08, 0.2, 0.5, 0.7), 
+             ncol = 1)
+
+```
+
+
+```{r echo=FALSE, Load_the_Data16}
+grid.arrange(create_hist('citric.acid', 0.05), 
+             create_logplot('citric.acid', 0.05, 0.05, 0.3, 0.7), 
+             ncol = 1)
+
+```
+
+```{r echo=FALSE, Load_the_Data17}
+grid.arrange(create_hist('chlorides', 0.01), 
+             create_logplot('chlorides', 0.01, 0.05, 0.25, 0.5), 
+             ncol = 1)
+
+```
+
+```{r echo=FALSE, Load_the_Data18}
+
+grid.arrange(create_hist('free.sulfur.dioxide', 1),
+             create_logplot('free.sulfur.dioxide', 0.08, 2, 9, 18), 
+             ncol = 1)
+
+```
+
+```{r echo=FALSE, Load_the_Data19}
+
+grid.arrange(create_hist('total.sulfur.dioxide', 1),
+             create_logplot('total.sulfur.dioxide', 0.05, 10, 35, 52), 
+             ncol = 1)
+
+```
+
+```{r echo=FALSE, Load_the_Data20}
+
+grid.arrange(create_hist('sulphates', 0.05), 
+             create_logplot('sulphates', 0.08, 0.5, 0.9, 1.2), 
+             ncol = 1)
+
+```
+
+```{r echo=FALSE, Load_the_Data21}
+
+grid.arrange(create_hist('alcohol', 0.1), 
+             create_logplot('alcohol', 0.01, 9, 11, 12), 
+             ncol = 1)
+
+```
+
+#Univariate Analysis
+
+There are 1599 observations and 12 variables (fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, free sulfur dioxide, 
+total sulfur dioxide, density, pH, sulphates, alcohol and quality).
+Most red wines in this dataset have a quality rank of 5 and 6.
+The median alcohol level is 10.2 %, with values ranging from 8.4% to 14.9%.
+The median pH level is 3.31, with values ranging from 2.74 to 4.01.
+The median quality level is 6, with values ranging from 3 to 8.
+
+So far we can only see the distributions of the variables. 
+To further understand the relationships between the variables 
+and how they relate to the quality of the wine, we will use the bivariate analysis.
+
+Because the majority of these variables have right-skewed distributions, 
+we used the log10 transformation to normalize those distributions. 
+Namely, these variables are: fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, free sulfur dioxides, total sulfur dioxide, 
+sulphates and alcohol.
+
+We have not created any new variable because it is not adequate for this case. Hence, we will pursue our analysis with the 12 variables at hand.
+
+#Bivariate Plots Section
+
+We will investigate the relationship between the variables in this section. We will start with the correlations.
+
+```{r global_options, include=FALSE}
+
+knitr::opts_chunk$set(width = 1000, fig.width=7.5, fig.height=5, 
+                      fig.path='Figs/', 
+                      fig.align='center', echo=FALSE, warning=FALSE, 
+                      message=FALSE)
+
+```
+
+```{r label title, fig.width=25, fig.height=16}
+library(corrplot)
+
+#We will first get rid of the variable "X" because that is just counting
+#the number of observations in our dataset.
+
+redwine <- redwine[-grep('X', colnames(redwine))]
+
+RW <- cor(redwine)
+
+corrplot(RW, method = 'number', type = 'lower', bg="darkgray", 
+         number.cex = 2.5, number.digits = 2, insig = 'blank', 
+         tl.cex = 2.2, diag = FALSE)
+
+```
+
+If we have a look at the correlations plot, we can see that alcohol has the strongest correlation with quality (0.48). Based on some additional research, 
+we can see that this makes sense. The alcohol content of the wine is indeed a crucial key to its quality.
+Besides alcohol, notice that we have only 3 more variables that are positively associated with quality: fixed acidiy, citric acid and sulphates. 
+I do not mention the variable 'residual sugar' because the correlation 
+is almost 0 (0.01).
+The largest positive correlation in this plot is 0.67 and the largest negative correlation is -0.68.
+
+We will have a look at the scatterplots of the variables that are 
+most correlated with each other.
+
+```{r echo=FALSE, Load_the_Data22}
+
+#We're making a function to show the scatterplots between the variables of interest.
+
+create_scatter <- function(variable1, variable2, title){
+  return(ggplot(aes_string(x = variable1, y = variable2), data = redwine)+
+           geom_point(alpha = 0.2, size = 1)+
+           ggtitle(title))
+}
+
+create_scatter('free.sulfur.dioxide', 'total.sulfur.dioxide',
+               'Correlation = 0.67')
+
+```
+
+We can observe the positive correlation of 0.67 between free sulfur dioxide and
+total sulfur dioxide on this scatterplot.
+Notice that most of the datapoints are clustered in the lower range
+of the values for both variables.
+This positive association is to be expected because free sulfur dioxide
+is part of the total sulfur dioxide.
+
+```{r echo=FALSE, Load_the_Data23}
+
+create_scatter('fixed.acidity', 'citric.acid',
+               'Correlation = 0.67')
+
+```
+
+Notice that in the relationship between fixed acidity and citric acid, the
+data points are more uniformly dispersed. I.e. we do not have a clustering
+at a certain range of values.
+The correlation is rather strong (+0.67) and it makes sense. Citric acid
+is a type of the fixed acids used in wine production.
+
+```{r echo=FALSE, Load_the_Data24}
+
+create_scatter('fixed.acidity', 'density', 'Correlation = 0.67')
+
+```
+
+In the scatterplot of fixed acidity and density, we see that most
+observations are clustered in the midpart of the graph.
+The correlation of +0.67 is pretty strong. There is a logical explanation
+for that.
+The most common types of fixed acids are: citric acid, tartaric acid,
+and malic acid. All these acids have a higher density than water's density.
+This means that the more fixed acids we have in red wine, the more dense
+it will be.
+
+```{r echo=FALSE, Load_the_Data25}
+
+create_scatter('fixed.acidity', 'pH', 'Correlation = -0.68')
+
+```
+
+Regarding the relationship between fixed acidity and pH, we observe a negative
+association. The correlation is -0.68. This means that the more fixed acids we
+have in red wine, the lower its pH will be.
+
+We will analyze now the relationship between alcohol and quality, since alcohol
+is the variable that correlates the most with quality.
+
+```{r echo=FALSE, Load_the_Data26}
+
+redwine$quality <- as.factor(redwine$quality)
+
+create_boxplot <- function(variable1, variable2, a, b, c){
+  return(ggplot(aes_string(x = variable1, y = variable2), 
+                data =redwine)+
+           geom_jitter( alpha = .3)  +
+  geom_boxplot( alpha = .5,color = 'blue')+
+  stat_summary(fun.y = "mean", 
+               geom = "point", 
+               color = "red", 
+               shape = 8, 
+               size = 4)+
+           scale_y_continuous(breaks = seq(a, b, c)))
+}
+
+create_boxplot('quality', 'alcohol', 0, 15, 0.5)
+
+```
+
+Notice that the highest quality red wine has the highest median alcohol content (slightly above 12%).
+The most frequent quality red wines (5 and 6) have median alcohol contents 
+of 9.7% and 10.6% respectively. The most frequent quality red wine 
+(quality level 5) has the lowest median alcohol content among all.
+We also notice that the most frequent quality red wines (5 and 6) have outliers. Since the correlation between alcohol and quality is 0.48, it makes sense that there will not be a perfect linear relationship between the two. That is to say, more alcohol content does not necessarily imply higher quality. 
+
+In the correlations plot, we also notice a negative correlation between 
+volatile acidiy and quality of red wine (-0.39). 
+We will analyze the boxplots for these variables below.
+
+```{r echo=FALSE, Load_the_Data27}
+
+create_boxplot('quality', 'volatile.acidity', 0, 1.8, 0.1)
+
+```
+
+Indeed, the negative correlation between the two is resembled in these boxplots
+as well. The highest quality red wines have the lowest median volatile acidity content.
+Again, the most frequent quality red wines (5 and 6) have the most outliers regarding volatile acidity. The median values of volatile acidity for
+the red wines with quality levels of 5 and 6 are 0.58 (g/dm^3) 
+and 0.49 (g/dm^3), respectively.
+
+Since there is a positive correlation of 0.25 between sulphates and quality
+of red wine, we will investigate this relationship as well.
+
+```{r echo=FALSE, Load_the_Data28}
+
+create_boxplot('quality', 'sulphates', 0, 2, 0.1)
+
+```
+
+The positive correlation is resembled in these boxplots as well. Although it is quite small (0.25 only), we can notice that the higher quality red wines have higher median sulphates values.
+Just like before, we can observe that the most frequent quality red wines
+(5 and 6) have the most outliers regarding the sulphates content.
+The median values of sulphates of these wines with quality levels of 5 and 6
+are 0.58 (g/dm^3) and 0.64 (g/dm^3) respectively.
+
+#Bivariate Analysis
+
+In this section, we looked at the relationships between the variables of our dataset. We used the correlation plot for that.
+We mostly paid attention to the strongest correlations, both positive and negative. The strongest positive correlation overall was 0.67 and the strongest negative correlation was -0.68. We graphed the scatterplots of these variables
+for a better visual understanding.
+
+Since we are interested to know which chemical properties affect the quality of red wine, we investigated the relationships between some chemical properties 
+and the quality of wine. The strongest correlation was between the alcohol 
+content and the quality. We used boxplots to see visually that higher quality wines have indeed higher median alcohol contents. The highest quality red wine
+has an alcohol content of around 12.2%.
+With the same logic, we had a look at two more rather strong correlations. 
+The volatile acidity content correlates negatively with the red wine quality (-0.39). And the sulphates have a small positive correlation with the red wine quality (0.25).
+The boxplots also show that the directions of these correlations make sense.
+
+What's interesting to notice, is that the most frequent quality red wines 
+(5 and 6) had the most outliers regarding the chemical properties 
+we investigated. The reason is that the correlations we investigated are not
+even close to being perfect (i.e. 1 or -1). Hence the relationship between
+those variables and the wine quality is not perfectly linear. I.e. more alcohol content does not necessarily mean a higher quality, or a higher 
+volatile acidity content does not necessarily mean a lower quality of red wine.
+
+We will investigate how we can best predict the quality of the red wine in the upcoming section.
+
+#Multivariate Plots Section
+
+In this section, we will use 3 variables simultaneously to conduct some further investigations. Namely, we want to see whether the strong correlations we 
+found in our bivariate analysis hold true for all the different quality 
+levels of the red wine.
+
+```{r echo=FALSE, Load_the_Data29}
+
+#We're making a function to graph scatterplots, faceted by the quality levels.
+ 
+create_multiscatter <- function(variable1, variable2, title){
+  return(ggplot(aes_string(x = variable1, y = variable2), 
+                data = redwine)+
+           geom_point(alpha = 0.2, size = 1)+
+           facet_wrap(~quality)+
+           ggtitle(title))
+}
+
+create_multiscatter('free.sulfur.dioxide', 'total.sulfur.dioxide',
+                    'Correlation = 0.67')
+
+```
+
+```{r echo=FALSE, Load_the_Data30}
+
+create_multiscatter('citric.acid', 'fixed.acidity', 'Correlation = 0.67')
+
+```
+
+```{r echo=FALSE, Load_the_Data31}
+
+create_multiscatter('density', 'fixed.acidity', 'Correlation = 0.67')
+
+```
+
+```{r echo=FALSE, Load_the_Data32}
+
+create_multiscatter('pH', 'fixed.acidity', 'Correlation = -0.68')
+
+```
+
+We can notice that the correlations hold for every quality level. 
+However, there are much less observations for the quality levels of 3 and 8. That's because there are less red wines with those quality levels in 
+our dataset. The most dense scatterplots are for the quality levels of 5 and 6, which is in line with our data. The most frequent quality of red wines 
+in our data set is 5 and 6. 
+
+Now we will analyze two pairs of variables that are rather negatively
+correlated (citric acid and volatile acidity, citric acid and pH).
+We would like to see whether there is variation in the correlation
+between these variables for different quality levels of red wine.
+
+```{r echo=FALSE, Load_the_Data33}
+
+make_multiplot <- function(variable1, variable2, title){
+  return(ggplot(aes_string(x = variable1, y= variable2, 
+                  color = 'quality'),
+       data = redwine)+
+  geom_point(alpha = 0.8, size = 1)+
+  geom_smooth(method = "lm", se = FALSE,size=1)+
+  scale_color_brewer(type='seq',
+                   guide=guide_legend(title='Quality'))+
+    ggtitle(title))
+
+}
+
+make_multiplot('volatile.acidity', 'citric.acid', 'Correlation = -0.55')
+
+```
+
+The negative correlation of -0.55 between volatile acidity and citric acid
+is shown in this graph.
+The slopes of the lines fitted through the points are relatively flat. 
+This makes sense because these slopes resemble the correlation coefficient
+between the variables.
+Notice that for every quality level, there is a slight difference between
+the slopes of the lines.
+I.e. the correlation between citric acid and volatile acidity
+slightly differs among the different quality levels.
+
+```{r echo=FALSE, Load_the_Data34}
+
+make_multiplot('pH', 'citric.acid', 'Correlation = -0.54')
+
+```
+
+The same logic goes for the negative correlation of -0.54 
+between pH and citric acid. 
+The variation in the slopes of the lines shows that the correlation
+between these variables slightly differs by quality level.
+We can notice that the steepest lines is for the quality level of 3.
+I.e. the most negative correlation between pH and citric acid
+occurs for the red wines with the quality level of 3.
+
+We will now model the relationships between the chemical properties and the quality of red wine. We will use different variables in our models to see 
+which one is better. We will start with the variables that are most correlated with the quality of red wine. And we will apply the log10 transformations if necessary, to use normally distributed independent variables.
+
+```{r echo=FALSE, Load_the_Data35}
+
+#We first convert the variable quality into a numerical variable. Otherwise, linear models do not work with factor variables.
+
+library(memisc)
+
+redwine$quality <- as.numeric(redwine$quality)
+
+model1 <- lm(formula = I(quality) ~ I(log10(alcohol)), data = redwine)
+
+model2 <- update(model1, ~. + log10(volatile.acidity))
+
+model3 <- update(model2, ~. + log10(sulphates))
+
+model4 <- update(model3, ~. + log10(citric.acid + 1))
+
+winemodels <- mtable(model1, model2, model3, model4)
+
+winemodels
+
+```
+
+#Multivariate Analysis
+
+We will now give some interpretations to our linear models. 
+We used 'quality' as our dependent variable and we used the chemical properties that are most associated with quality as independent variables.
+Notice that we have 4 models because we gradually added one variable 
+to each model to see how much better the fit is. I.e. we want to see whether
+there is a significant increase in the R squared value.
+We used the log10 transformation to all the independent variables because they have right-skewed distributions. This transformation normalizes 
+the distributions of the variables. One assumption of the linear model is to
+have normal distributions of the independent variables. With this 
+transformation we manage to fulfill that requirement. Notice that we have 'log10(citric acid + 1)'. The reason we add 1 is because we have most values 
+of the citric acid equal to zero. Logarithm of zero would be undefined, 
+so we add 1 to prevent that. 
+The highest R squared value is 0.3. The last 3 models have such a R^2 value. 
+This means that 30% of the variation in the quality of red wines is explained 
+by the independent variables in our model.
+If we were to choose the best model, we want the one with the highest R squared and with the most significant coefficients. I.e. the third model seems to be
+the best choice. All the explanatory variables are significant at the 1% significance level. And the F value is also significant, which means that the explanatory variables have a joint significant effect on the quality of 
+red wines.
+The reason we don't choose the fourth model is because the variable 
+'citric acid' is insignficant. And the third model is better than the 
+second model because the additional variable of 'log10(sulphates)' in the third model is significant.
+Although the R squared value is only 0.3, we were still able to derive a linear model that predicts the quality of red wines.
+
+#Final Plots
+
+##Plot 1
+
+```{r echo=FALSE, Plot_One}
+
+ggplot(aes_string(x = 'fixed.acidity', y = 'citric.acid'), 
+       data = redwine)+
+  geom_point(alpha = 0.2, size = 1)+
+  ggtitle('Scatter Plot of Fixed Acidity and Citric Acid')+
+  xlab('Fixed Acidity (g/dm^3)')+
+  ylab('Citric Acid (g/dm^3)')+
+  scale_x_continuous(breaks = seq(0, 16, 1))+
+  scale_y_continuous(breaks = seq(0, 1, 0.1))
+
+```
+
+##Description 1
+
+We can observe the positive correlation between fixed acidity and the citric 
+acid levels of the red wine. Both variables are measured in the same units (g/dm^3). The positive correlation of 0.67 is to be expected because citric 
+acid is a type of fixed acids that are used in the production of red wines. 
+Hence, if the level of citric acid increases, then by definition we are 
+increasing the level of fixed acidity.
+
+##Plot 2
+
+```{r echo=FALSE, Plot_Two}
+
+redwine$quality <- as.factor(redwine$quality)
+
+ggplot(aes_string(x = 'quality', y = 'alcohol'), 
+       data = redwine)+
+  geom_jitter( alpha = .3)  +
+  geom_boxplot( alpha = .5,color = 'blue')+
+  stat_summary(fun.y = "mean", 
+               geom = "point", 
+               color = "red", 
+               shape = 8, 
+               size = 4)+
+  ggtitle('Boxplots of Alcohol Content By Quality Level')+
+  xlab('Quality')+
+  ylab('Alcohol (% by volume)')+
+  scale_y_continuous(breaks = seq(0, 15, 1))
+
+```
+
+##Description 2
+
+We can notice the different alcohol contents across the different qualities of 
+red wine. Alcohol is the chemical property that correlates the most with the quality of red wine. It's interesting to observe that the most frequent quality wines (quality level 5) have the lowest median alcohol content.
+The distributions of the alcohol content by quality levels differ. Namely, for 
+the quality level of 4, 5 and 6, the distributions of alcohol are right-skewed. Whereas for the quality level of 3, 7 and 8 the distributions are more normal.
+
+##Plot 3
+
+```{r echo=FALSE, Plot_Three}
+
+ggplot(aes_string(x = 'volatile.acidity', y='citric.acid', 
+                  color = 'quality'),
+       data = redwine)+
+  geom_point(alpha = 0.8, size = 1)+
+  geom_smooth(method = "lm", se = FALSE,size=1)+
+  scale_color_brewer(type='seq',
+                   guide=guide_legend(title='Quality'))+
+  ggtitle('Scatter Plot of Citric Acid and Volatile Acidity by Quality')+
+  xlab('Volatile Acidity (g/dm^3)')+
+  ylab('Citric Acid (g/dm^3)')
+
+```
+
+##Description 3
+
+The negative correlation of -0.55 between volatile acidity and citric acid is shown on this graph. Both variables are measured in the same units (g/dm^3).
+The different slopes of the fitted lines through the dots indicate that
+the negative correlation between these variables differs slightly by quality.
+There is a logical explanation for the negative correlation between 
+the volatile acidity and citric acid. Citric acid is a type of fixed acid. 
+If there is more citric acid in the production of red wine 
+(i.e. more fixed acids), there will be less of the opposite acids 
+(i.e. volatile acids). Hence the negative correlation.
+
+#Conclusion
+
+In this project, we investigated the chemical properties that affect the 
+quality of red wines. We used a dataset of 1599 observations and 12 variables.
+We went through univariate, bivariate and multivariate analysis.
+Firstly we looked at the variables individually. We noticed that most variables have right-skewed distributions. Hence, for these variables we applied the 
+log10 transformation to normalize the distributions.
+Secondly, we investigated the correlations plot. We looked for the strongest correlations between the variables. We also observed that most variables have almost no correlation with the quality of red wines. 
+Nonetheless, we selected 4 variables that are more strongly correlated with quality and performed 4 
+different linear models.
+The reason for modelling is to predict the quality of red wines based on 
+various independent variables. The model that included 3 explanatory variables (log10(alcohol), log10(volatile acidity) and log10(sulphates)) had an 
+explanatory power of 30%. I.e. the model explains 30% of the variation in the quality levels of red wine.
+Alcohol has the strongest correlation with the quality of red wine (+0.48). 
+A model that predicts the quality of red wine based on the alcohol content 
+has an explanatory power of 20%. The additional explanatory variables in 
+our model only increased the value of R^2 by 10%.
+An interesting observation is that the red wines with the most frequent quality level (5) had the lowest median alcohol content of 9.7%.
+To improve the model we derived in this project, it would be great to have variables that are more strongly correlated with the quality of red wine. 
+That will most certainly lead to a model with a higher explanatory power. 
+Perhaps, another dataset can be tried in future research, or find new possible explanatory variables. Besides this, it would be interesting to observe 
+a parallel investigation with white wine. I.e. how the chemical properties
+affect the quality of white wine, in contrast to what we have found here 
+for red wine.
