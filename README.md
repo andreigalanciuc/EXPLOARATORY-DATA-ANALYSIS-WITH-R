@@ -1,4 +1,10 @@
 # EXPLORATORY-DATA-ANALYSIS-WITH-R
 
-Red Wine Quality Exploration
+### SOFTWARE REQUIREMENTS
+```R```
+
+### Red Wine Quality Exploration
 The guiding question throughout this analysis is to find: Which chemical properties influence the quality of red wine?
+
+### PROJECT SUMMARY
+In this project, we investigated the chemical properties that affect the quality of red wines. We used a dataset of 1599 observations and 12 variables. We went through univariate, bivariate and multivariate analysis. Firstly we looked at the variables individually. We noticed that most variables have right-skewed distributions. Hence, for these variables we applied the log10 transformation to normalize the distributions. Secondly, we investigated the correlations plot. We looked for the strongest correlations between the variables. We also observed that most variables have almost no correlation with the quality of red wines. Nonetheless, we selected 4 variables that are more strongly correlated with quality and performed 4 different linear models. The reason for modelling is to predict the quality of red wines based on various independent variables. The model that included 3 explanatory variables (log10(alcohol), log10(volatile acidity) and log10(sulphates)) had an explanatory power of 30%. I.e. the model explains 30% of the variation in the quality levels of red wine. Alcohol has the strongest correlation with the quality of red wine (+0.48). A model that predicts the quality of red wine based on the alcohol content has an explanatory power of 20%. The additional explanatory variables in our model only increased the value of R^2 by 10%. An interesting observation is that the red wines with the most frequent quality level (5) had the lowest median alcohol content of 9.7%. To improve the model we derived in this project, it would be great to have variables that are more strongly correlated with the quality of red wine. That will most certainly lead to a model with a higher explanatory power. Perhaps, another dataset can be tried in future research, or find new possible explanatory variables. Besides this, it would be interesting to observe a parallel investigation with white wine. I.e. how the chemical properties affect the quality of white wine, in contrast to what we have found here for red wine.
